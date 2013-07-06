@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 
 import casio
+import tone
 
 import numpy as np
 import math
@@ -14,24 +15,13 @@ casio.init()
 mixer.init()
 
 def note_to_frequency(n):
-  return 440 * (2**((n-45.0) / 12.0))
+  return 440 * (2**((n-57.0) / 12.0))
 
 scale_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C"]
 def note_to_string(n):
   return "Octave %d note %s freq=%lf." % (int(n / 12), scale_names[n%12], note_to_frequency(n))
 
-def make_tone(n):
-  """Make a two channel sine wave."""
-  samples_per_second, sample_size, channels = mixer.get_init()
-  assert(sample_size < 0)
-  max_amp = 2**(-sample_size - 1) - 1
-  length = 1.0 # One second
-  t = np.transpose(np.asmatrix([[1], [1]]) * np.linspace(0, length, length*samples_per_second))
-  freq = note_to_frequency(n)
-  wave = np.array(np.sin(t * freq * 2 * math.pi) * max_amp/5, dtype=np.int16)
-  return sndarray.make_sound(wave)
-
-notes = [make_tone(n) for n in range(150)]
+notes = [tone.make_tone(note_to_frequency(n)) for n in range(150)]
 def play_note(n):
   notes[n].play()
 
