@@ -19,9 +19,6 @@ scale_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
 def note_to_string(n):
   return "Octave %d note %s." % (int(n / 12), scale_names[n%12])
 
-
-bowl = mixer.Sound("sounds/bowla.wav")
-
 def make_tone(n):
   samples_per_second, sample_size, channels = mixer.get_init()
   assert(sample_size < 0)
