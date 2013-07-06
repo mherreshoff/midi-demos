@@ -21,7 +21,8 @@ scale_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
 def note_to_string(n):
   return "Octave %d note %s freq=%lf." % (int(n / 12), scale_names[n%12], note_to_frequency(n))
 
-notes = [tone.make_tone(note_to_frequency(n)) for n in range(150)]
+harmonics = [.5,.3,.2]
+notes = [tone.harmonic_tone(note_to_frequency(n), harmonics) for n in range(150)]
 def play_note(n):
   notes[n].play()
 
