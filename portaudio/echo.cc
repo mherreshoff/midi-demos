@@ -47,14 +47,14 @@ int main (void) {
 
   PaStreamParameters inputParameters;
   inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
-  inputParameters.channelCount = 2;       /* stereo input */
+  inputParameters.channelCount = CHANNELS;
   inputParameters.sampleFormat = PA_SAMPLE_TYPE;
   inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
   inputParameters.hostApiSpecificStreamInfo = NULL;
 
   PaStreamParameters outputParameters;
   outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
-  outputParameters.channelCount = 2;       /* stereo output */
+  outputParameters.channelCount = CHANNELS;
   outputParameters.sampleFormat = PA_SAMPLE_TYPE;
   outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
   outputParameters.hostApiSpecificStreamInfo = NULL;
