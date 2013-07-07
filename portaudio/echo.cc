@@ -19,7 +19,39 @@ const int FRAMES_PER_BUFFER = 256;
 const int CHANNELS = 2;
 using namespace std;
 
+
+class Statistics {
+ private:
+  long count;
+  double total;
+  double total_squares;
+
+ public:
+   Statistics() {
+     count = 0;
+     total = total_squares = 0.0;
+   }
+
+  void addDataPoint(double data) {
+    count++;
+    total += data;
+    total_squares += data*data;
+  }
+
+  double getMean() {
+    return total / (double) count;
+  }
+
+  double getVariance() {
+    double mu = getMean();
+    return (total_squares/count)-mu*mu;
+  }
+};
+
+Statistics audioStats;
+
 void quit (PaError err, string s) {
+  cerr << "Audio Stats: mean = " << audioStats.getMean() << " var = " << audioStats.getVariance() << endl;
   cerr << "Quit: " << s << endl;
   cerr << "Error Message: " << Pa_GetErrorText(err) << endl;
   Pa_Terminate();
@@ -27,6 +59,7 @@ void quit (PaError err, string s) {
 }
 
 static int paCallback( const void *inputBuffer, void *outputBuffer,
+
                            unsigned long framesPerBuffer,
                            const PaStreamCallbackTimeInfo* timeInfo,
                            PaStreamCallbackFlags statusFlags,
@@ -35,7 +68,9 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
   float* in = (float*) inputBuffer;
   float* out = (float*) outputBuffer;
   for (int i=0; i < framesPerBuffer*CHANNELS ; i++) {
-    out[i] = in[i];
+    float f = in[i];
+    out[i] = f;
+    audioStats.addDataPoint(f);
   }
   return paContinue;
 }
