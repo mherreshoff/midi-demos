@@ -19,6 +19,9 @@ void quit (PaError err, string s) {
   exit(0);
 }
 
+/*
+ * Phase is a straight-forward class for representing and updating the phase of a waveform.
+ */
 class Phase {
  public:
   Phase() : phase(0) {}
@@ -33,17 +36,24 @@ class Phase {
   double phase;
 };
 
+// TODO: Make a state struct containing these and the KOrg*.
 Phase main_phase;
 Phase modulator_phase;
 
+// The multipliers show which modulator is controlled by each slider.
 int num_modulators = 8;
 double modulator_multiplier[] = {.25, .5, 1, 1.5, 2, 3, 3.5, 4};
 
+/*
+ * This is the function port audio calls to generate the sound. 
+ * Right now, it outputs a sine wave modulated by some other sine waves whose
+ * frequencies are multiples of the original one.
+ */
 static int paCallback( const void *inputBuffer, void *outputBuffer,
-                           unsigned long framesPerBuffer,
-                           const PaStreamCallbackTimeInfo* timeInfo,
-                           PaStreamCallbackFlags statusFlags,
-                           void *userData ) {
+                       unsigned long framesPerBuffer,
+                       const PaStreamCallbackTimeInfo* timeInfo,
+                       PaStreamCallbackFlags statusFlags,
+                       void *userData ) {
   KOrg* korg = (KOrg*) userData;
   float* out = (float*) outputBuffer;
   for (int i=0; i < framesPerBuffer*CHANNELS ; i++) {
@@ -69,9 +79,12 @@ static int paCallback( const void *inputBuffer, void *outputBuffer,
 
 
 
+
 int main (void) {
+  // Set up the midi device:
   KOrg* korg = new KOrg();
 
+  // Set up the audio event loop:
   PaError err = Pa_Initialize();
   if (err != paNoError) quit(err, "Couldn't initialize portaudio.");
 
@@ -91,13 +104,13 @@ int main (void) {
               FRAMES_PER_BUFFER,
               0, /* paClipOff, */  /* we won't output out of range samples so don't bother clipping them */
               paCallback,
-              (void*)korg );
+              (void*)korg /* pass in the midi device so port audio can see it. */);
   if (err != paNoError) quit(err, "Couldn't open stream.");
 
   err = Pa_StartStream( stream );
   if( err != paNoError ) quit(err, "Couldn't start stream.");
 
-  /* Sleep for several seconds. */
+  /* Sleep. */
   while(true) {
     Pa_Sleep(10*1000);
   }
